@@ -24,25 +24,26 @@ struct write_result  //use this struct to store the result from a curl call
   unsigned int pos;
 };
 
-static size_t handleJsonReturn(void *ptr, size_t size, size_t nmemb, void *data)
+static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data)
 {
-  struct write_result *result = (struct write_result *)data;
+  size_t realsize = size * nmemb;
+  write_result *mem = (write_result *)data;
   
-  if(result->pos + size * nmemb >= result->len - 1)
-  { //make sure the buffer is large enough. if not, make it bigger.
-    printf("error, too small of buffer. %u * %u = %lu", (unsigned int)size, (unsigned int)nmemb, (unsigned int)size*nmemb);
-    free(result->data);
-    result->data = (char*)malloc((size*nmemb+1)*sizeof(char));
+  mem->data = (char*)realloc(mem->data, mem->pos + realsize + 1);
+  if (mem->data == NULL) {
+    /* out of memory! */ 
+    printf("not enough memory (realloc returned NULL)\n");
+    exit(EXIT_FAILURE);
   }
   
-  //this is done because curl can return data in chunks instead of 
-  //full strings. so we have to keep track of where we have to 
-  //add to the data string. 
-  memcpy(result->data + result->pos, ptr, size * nmemb);
-  result->pos += size * nmemb;
-  count += 1;
-  return size * nmemb;
+  memcpy(&(mem->data[mem->pos]), ptr, realsize);
+  mem->pos += realsize;
+  mem->data[mem->pos] = 0;
+  mem->len = pos;
+  
+  return realsize;
 }
+
 
 int main (int /*argc*/, char** argv)
 {
@@ -77,7 +78,7 @@ int main (int /*argc*/, char** argv)
     curl_easy_setopt(curlhandle, CURLOPT_URL, myurl);
     
     //set the curl options for this transaction
-    curl_easy_setopt(curlhandle, CURLOPT_WRITEFUNCTION, handleJsonReturn); //catch the output from couch and deal with it with this function
+    curl_easy_setopt(curlhandle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback); //catch the output from couch and deal with it with this function
     curl_easy_setopt(curlhandle, CURLOPT_WRITEDATA, &myresult);  //checkCouchDBReturn will pass the output to myReturn
     curl_easy_setopt(curlhandle, CURLOPT_ERRORBUFFER, errorBuf);  //hold any errors here.
     
