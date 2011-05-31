@@ -46,7 +46,9 @@ def main(*argv):
     return 
   
   key = argv[0]
-  value = formatvalue(argv[1])
+  if len(argv) > 1:
+    value = formatvalue(argv[1])
+  
   #print 'Searching Muon Veto DAQ Map for', key, '=', value
 
   
