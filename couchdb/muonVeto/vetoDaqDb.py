@@ -29,7 +29,7 @@ def main(*argv):
     3. search for the muon module that matches a particular field.
     
     Here are the examples for each one
-    1) ./vetoDaqDb.py muoninfo 3
+    1) ./vetoDaqDb.py moduleinfo 3
     
     2) ./vetoDaqDb.py list
     
