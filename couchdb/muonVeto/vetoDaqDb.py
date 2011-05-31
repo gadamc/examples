@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from couchdbkit import Server, Database
-import sys
+import sys, math
 
 
 def formatvalue(value):
