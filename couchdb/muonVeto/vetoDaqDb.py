@@ -2,22 +2,8 @@
 
 from couchdbkit import Server, Database
 import sys
-'''
-This script queries the edwdb database (on edwdbik.fzk.de) and returns information
-found in the Muon Veto DAQ Map documents. You can do three things with this script.
-  1. obtain the information for a particular muon module
-  2. list the available fields to choose from in the muon veto daq map
-  3. search for the muon module that matches a particular field.
-  
-Here are the examples for each one
-  1) ./vetoDaqDb.py muoninfo 3
-  
-  2) ./vetoDaqDb.py list
-  
-  3) ./vetoDaqDb.py "HV channel" 134
-  
-  
-'''
+
+
 def formatvalue(value):
   if (isinstance(value,str)):
     # #see if this string is really an int or a float
@@ -35,9 +21,29 @@ def formatvalue(value):
     return value
 
 def main(*argv):
+  '''
+    This script queries the edwdb database (on edwdbik.fzk.de) and returns information
+    found in the Muon Veto DAQ Map documents. You can do three things with this script.
+    1. obtain the information for a particular muon module
+    2. list the available fields to choose from in the muon veto daq map
+    3. search for the muon module that matches a particular field.
+    
+    Here are the examples for each one
+    1) ./vetoDaqDb.py muoninfo 3
+    
+    2) ./vetoDaqDb.py list
+    
+    3) ./vetoDaqDb.py "HV channel" 134
+    
+    
+  '''
   s = Server('http://edwdbik.fzk.de:5984')
   db = s['edwdb']
 
+  if len(argv) == 0:
+    print 'You need to supply some arguments'
+    help(main)
+    return 
   
   key = argv[0]
   value = formatvalue(argv[1])
@@ -62,7 +68,7 @@ def main(*argv):
     doc = vr.first()['doc']
     for k,val in doc.items():
       if k != '_id' and k!= '_rev':
-      print k
+       print k
   
 
   else: 
