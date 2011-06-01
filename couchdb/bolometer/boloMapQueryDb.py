@@ -97,8 +97,12 @@ def main(*argv):
 
   elif arg1 == 'listbolos':
     vr = db.view('bolohardware/bbolopositionmap', group = True)
+    bololist = list()
     for row in vr:
-      print row['key'][3]
+      if row['key'][3] in bololist == False:
+        bololist.append(row['key'][3])
+    for bolo in bololist:
+      print bolo
 
 
 
