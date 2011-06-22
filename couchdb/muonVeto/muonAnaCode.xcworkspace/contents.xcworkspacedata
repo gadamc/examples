@@ -5,6 +5,9 @@
       location = "group:listVetoDaqFields.py">
    </FileRef>
    <FileRef
+      location = "group:lastVetoDaqFields.C">
+   </FileRef>
+   <FileRef
       location = "group:vetoDaqDb.py">
    </FileRef>
 </Workspace>

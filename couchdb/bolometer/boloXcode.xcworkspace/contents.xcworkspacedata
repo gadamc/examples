@@ -7,4 +7,10 @@
    <FileRef
       location = "group:boloMapQueryDb.py">
    </FileRef>
+   <FileRef
+      location = "group:listRunsByType.py">
+   </FileRef>
+   <FileRef
+      location = "group:listRunTypes.C">
+   </FileRef>
 </Workspace>
