@@ -1,3 +1,5 @@
 .DS_Store
 /couchdb/bolometer/boloXcode.xcworkspace/xcuserdata/adam.xcuserdatad/UserInterfaceState.xcuserstate
 /couchdb/muonVeto/muonAnaCode.xcworkspace/xcuserdata/adam.xcuserdatad/UserInterfaceState.xcuserstate
+*.png
+*.root
