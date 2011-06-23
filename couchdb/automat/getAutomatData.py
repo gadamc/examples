@@ -2,7 +2,10 @@
 
 from couchdbkit import Server, Database
 import sys, math, os, datetime
-from ROOT import *  #use ROOT to plot data. Also save an output ROOT file containing all of the data for external use
+
+#use ROOT to plot data. Also save an output ROOT file containing all of the data for external use
+from ROOT import gROOT, TGraph, TCanvas, TFile  
+#from ROOT import *
 
 def main(*argv):
   '''
