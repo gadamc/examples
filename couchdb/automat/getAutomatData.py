@@ -69,7 +69,7 @@ def main(*argv):
     graphdict[k]['count'] = count
     g.GetXaxis().SetTimeDisplay(True)
     g.Draw('ap')
-    c.SaveAs(k + '.png', 'png')
+    c.SaveAs( os.path.join(dout, k + '.png'), 'png')
     fout.cd()
     g.Write()
   
