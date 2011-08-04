@@ -3,7 +3,7 @@
 from couchdbkit import Server, Database
 import sys
 
-s = Server('http://edwdbik.fzk.de:5984')
+s = Server('https://edwdbik.fzk.de:6984')
 db = s['edwdb']
 vr = db.view('muonveto/daqmap', include_docs = True, reduce = False, limit = 1)
 doc = vr.first()['doc']

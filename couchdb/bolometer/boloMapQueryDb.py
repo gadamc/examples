@@ -53,7 +53,7 @@ def main(*argv):
     
     
   '''
-  s = Server('http://edwdbik.fzk.de:5984')
+  s = Server('https://edwdbik.fzk.de:6984')
   db = s['edwdb']
 
   if len(argv) == 0:
