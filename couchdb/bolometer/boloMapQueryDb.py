@@ -23,13 +23,10 @@ def formatvalue(value):
 
 def onIgnoreList(key):
   ignoreList = ['_id', '_rev',
-                'author',
                 'content',
                 'date_filed',
                 'type',
-                'bolometer',
-                'date_valid',
-                'channels'
+                'bolometer'
                 ]
   return key in ignoreList 
 
@@ -86,6 +83,7 @@ def main(*argv):
           print '\n'
           print 'Date Valid (Year/Month/Day)', doc['date_valid']['year'], doc['date_valid']['month'], doc['date_valid']['day']
           print 'Channels', ''.join(str(' '+i) for i in doc['channels'])
+          print '_id', row['id']
           #for i in range(len(doc['channels'])):
           #  print doc['channels'][i]
                        
@@ -116,17 +114,33 @@ def main(*argv):
 
 
   else: 
-    vr = db.view('map/bolometer', reduce = False)
+    if len(argv) > 1:
+      vr = db.view('map/key_values', reduce = False, key = arg1)
   
-    for row in vr:
-      #print row['id']
-      doc = db.get(row['id'])
-      if doc.has_key(arg1):
-        #print doc[key]
-        docdate = datetime.date(doc['date_valid']['year'], doc['date_valid']['month'], doc['date_valid']['day'])
-        if doc[arg1] == arg2 and docdate >= date:
-          print 'bolometer:', doc['bolometer'], 'channels:', doc['channels'], 'date_valid', doc['date_valid']
-      
+      for row in vr:
+
+        if row['value'] == arg2:
+          doc = db.get(row['id'])
+          docdate = datetime.date(doc['date_valid']['year'], doc['date_valid']['month'], doc['date_valid']['day'])
+          if docdate >= date:
+            print 'bolometer:', doc['bolometer'], 'channels:', doc['channels'], 'date_valid', doc['date_valid'], '_id', doc['_id']
+
+    else:
+      vr = db.view('map/key_values', reduce = False, key = arg1)
+      vals={}
+      try:
+        for row in vr:
+          if vals.has_key(row['value']) == False:
+            vals[row['value']] = 1
+          else:
+            vals[row['value']] += 1
+      except:
+        print arg1, 'is probably a list or dictionary... this is not supported yet.'
+
+      print arg1+',', 'Number of occurrences'
+      for k,v in vals.items():
+        print str(k)+',', v
+
 
 if __name__ == '__main__':
   main(*sys.argv[1:])
