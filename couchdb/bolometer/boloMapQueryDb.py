@@ -1,7 +1,8 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from couchdbkit import Server, Database
-import sys, math
+import sys, math, datetime
 
 
 def formatvalue(value):
@@ -44,11 +45,11 @@ def main(*argv):
     5. list all of the dates when bolometer configurations have been uploaded to the database
 
     Here are the examples for each one
-    1) ./boloMapQueryDb.py boloinfo ID6R
+    1) ./boloMapQueryDb.py boloinfo ID6R <optional date in formay year,month,day - "2011,10,01">
     
     2) ./boloMapQueryDb.py listfields
     
-    3) ./boloMapQueryDb.py repartition_type sc
+    3) ./boloMapQueryDb.py repartition_type sc <optional date in formay year,month,day - "2011,10,01">
     
     4) ./boloMapQueryDb.py listbolos
     
@@ -67,7 +68,12 @@ def main(*argv):
   if len(argv) > 1:
     arg2 = formatvalue(argv[1])
   
-  
+  date = datetime.date(datetime.MINYEAR, 1, 1)
+
+  if len(argv) > 2:
+    date = datetime.date(formatvalue(argv[2].split(',')[0].strip(' ')), formatvalue(argv[2].split(',')[1].strip(' ')), formatvalue(argv[2].split(',')[2].strip(' ')))
+
+
   if arg1 == 'boloinfo':
     vr = db.view('map/bolometer', reduce = False, descending = True)
   
@@ -75,15 +81,17 @@ def main(*argv):
     for row in vr:
       if arg2 == row['key']:
         doc = db.get(row['id'])
-        print '\n'
-        print 'Date Valid (Year/Day/Month)', doc['date_valid']['year'], doc['date_valid']['day'], doc['date_valid']['month']
-        print 'Channels', ''.join(str(' '+i) for i in doc['channels'])
-        #for i in range(len(doc['channels'])):
-        #  print doc['channels'][i]
+        docdate = datetime.date(doc['date_valid']['year'], doc['date_valid']['month'], doc['date_valid']['day'])
+        if docdate >= date:
+          print '\n'
+          print 'Date Valid (Year/Month/Day)', doc['date_valid']['year'], doc['date_valid']['month'], doc['date_valid']['day']
+          print 'Channels', ''.join(str(' '+i) for i in doc['channels'])
+          #for i in range(len(doc['channels'])):
+          #  print doc['channels'][i]
                        
-        for key, value in doc.items():
-          if onIgnoreList(key) is False:
-            print ''.join([str(s).rjust(width) for s in [key, value]])
+          for key, value in doc.items():
+            if onIgnoreList(key) is False:
+              print ''.join([str(s).rjust(width) for s in [key, value]])
   
   
 
@@ -115,7 +123,8 @@ def main(*argv):
       doc = db.get(row['id'])
       if doc.has_key(arg1):
         #print doc[key]
-        if doc[arg1] == arg2:
+        docdate = datetime.date(doc['date_valid']['year'], doc['date_valid']['month'], doc['date_valid']['day'])
+        if doc[arg1] == arg2 and docdate >= date:
           print 'bolometer:', doc['bolometer'], 'channels:', doc['channels'], 'date_valid', doc['date_valid']
       
 
