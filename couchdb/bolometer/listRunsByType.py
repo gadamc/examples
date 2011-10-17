@@ -16,7 +16,7 @@ def main(*argv):
   '''
     
   s = Server('https://edwdbik.fzk.de:6984')
-  db = s['edwdb']
+  db = s['datadb']
         
   if len(argv) == 0:
     print 'You need to supply an argument'
@@ -27,13 +27,13 @@ def main(*argv):
     
     
   if arg1 == 'list':
-    vr = db.view('bolorunconfig/condition', group_level=1)
+    vr = db.view('header/runcondition', group_level=1)
     print 'Run Types'
     for row in vr:
       print row['key'][0]
   else:
     print 'looking for runs of type', arg1
-    vr = db.view('bolorunconfig/condition', endkey = [arg1,'',0], startkey = [arg1+'\ufff0', {}], group_level = 2, descending = True)
+    vr = db.view('header/runcondition', endkey = [arg1,''], startkey = [arg1+'\ufff0', ''], group_level = 2, descending = True)
     
     for row in vr:
       print row['key'][1]

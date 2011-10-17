@@ -41,7 +41,8 @@ def main(*argv):
     2. list the available fields to choose from in the bolometer map
     3. search for the bolometer that matches a particular field.
     4. list all of the available bolometer information in the database
-    
+    5. list all of the dates when bolometer configurations have been uploaded to the database
+
     Here are the examples for each one
     1) ./boloMapQueryDb.py boloinfo ID6R
     
@@ -51,10 +52,11 @@ def main(*argv):
     
     4) ./boloMapQueryDb.py listbolos
     
+    5) ./boloMapQueryDb.py listdates
     
   '''
   s = Server('https://edwdbik.fzk.de:6984')
-  db = s['edwdb']
+  db = s['bolohardwaremap']
 
   if len(argv) == 0:
     print 'You need to supply some arguments'
@@ -65,21 +67,19 @@ def main(*argv):
   if len(argv) > 1:
     arg2 = formatvalue(argv[1])
   
-  #print 'Searching Muon Veto DAQ Map for', arg1, '=', arg2
-
   
   if arg1 == 'boloinfo':
-    vr = db.view('bolohardware/bbolopositionmap', reduce = False, descending = True)
+    vr = db.view('map/bolometer', reduce = False, descending = True)
   
     width = 20
     for row in vr:
-      if arg2 == row['key'][3]:
+      if arg2 == row['key']:
         doc = db.get(row['id'])
         print '\n'
         print 'Date Valid (Year/Day/Month)', doc['date_valid']['year'], doc['date_valid']['day'], doc['date_valid']['month']
-        print 'Channels'
-        for i in range(len(doc['channels'])):
-          print doc['channels'][i]
+        print 'Channels', ''.join(str(' '+i) for i in doc['channels'])
+        #for i in range(len(doc['channels'])):
+        #  print doc['channels'][i]
                        
         for key, value in doc.items():
           if onIgnoreList(key) is False:
@@ -88,26 +88,27 @@ def main(*argv):
   
 
   elif arg1 == 'listfields':
-    vr = db.view('bolohardware/bbolopositionmap', include_docs = True, reduce = False, limit = 1)
-    doc = vr.first()['doc']
-    for k,val in doc.items():
-      if k != '_id' and k!= '_rev':
-       print k
+    vr = db.view('map/keys', group = True)
+    for row in vr:
+      if row['key'] != '_id' and row['key'] != '_rev':
+       print row['key']
   
 
   elif arg1 == 'listbolos':
-    vr = db.view('bolohardware/bbolopositionmap', group = True)
-    bololist = list()
+    vr = db.view('map/bolometer', group = True)
     for row in vr:
-      if (row['key'][3] in bololist) == False:
-        bololist.append(row['key'][3])
-    for bolo in bololist:
-      print bolo
+      print row['key']
+
+
+  elif arg1 == 'listdates':
+    vr = db.view('map/date_valid', group = True)
+    for row in vr:
+      print row['key']
 
 
 
   else: 
-    vr = db.view('bolohardware/bbolopositionmap', reduce = False)
+    vr = db.view('map/bolometer', reduce = False)
   
     for row in vr:
       #print row['id']

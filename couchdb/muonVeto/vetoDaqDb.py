@@ -33,59 +33,50 @@ def main(*argv):
     
     2) ./vetoDaqDb.py list
     
-    3) ./vetoDaqDb.py "HV channel" 134
+    3) ./vetoDaqDb.py "HV channel" 67
     
     
   '''
   s = Server('https://edwdbik.fzk.de:6984')
-  db = s['edwdb']
+  db = s['muonvetohardwaremap']
 
   if len(argv) == 0:
     print 'You need to supply some arguments'
     help(main)
     return 
   
-  key = argv[0]
+  arg0 = argv[0]
   if len(argv) > 1:
     value = formatvalue(argv[1])
   
   #print 'Searching Muon Veto DAQ Map for', key, '=', value
 
   
-  if key == 'moduleinfo':
-    vr = db.view('muonveto/daqmap', reduce = False)
+  if arg0 == 'moduleinfo':
+    vr = db.view('map/module', reduce = False, key = value)
   
     for row in vr:
-      if row['key'][3] == value:
-        print '\n'
-        doc = db.get(row['id'])
-        for k,val in doc.items():
-          if k != '_id' and k!= '_rev':
-            print k, val
-        print '\n'
+       doc = db.get(row['id'])
+       for k,val in doc.items():
+         if k != '_id' and k!= '_rev':
+           print k, val
+       print '\n'
   
 
-  elif key == 'list':
-    vr = db.view('muonveto/daqmap', include_docs = True, reduce = False, limit = 1)
-    doc = vr.first()['doc']
-    for k,val in doc.items():
-      if k != '_id' and k!= '_rev':
-       print k
+  elif arg0 == 'list':
+    vr = db.view('map/keys', group=True)
+    for row in vr:
+      if row['key'] != '_id' and k['key'] != '_rev':
+       print row['key']
   
 
   else: 
-    vr = db.view('muonveto/daqmap', reduce = False)
+    vr = db.view('map/key_values', key = arg0)
   
     for row in vr:
-      #print row['id']
-      doc = db.get(row['id'])
-      if doc.has_key(key):
-        #print doc[key]
-        if doc[key] == value:
-          print 'module:', doc['muonmodule'], 'end:', doc['end'], 'date_valid', doc['date_valid']
-      else:
-        print 'Exiting. Muon Veto DAQ docs do not have the key', key
-        return
+      if row['value'] == value:
+        doc = db.get(row['id'])
+        print 'module:', doc['muonmodule'], 'end:', doc['end'], ' date_valid', doc['date_valid']
 
 
 if __name__ == '__main__':

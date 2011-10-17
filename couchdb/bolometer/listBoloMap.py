@@ -14,8 +14,8 @@ def onIgnoreList(key):
   return key in ignoreList 
 
 s = Server('https://edwdbik.fzk.de:6984')
-db = s['edwdb']
-vr = db.view('bolohardware/bbolopositionmap', include_docs = True, reduce = False)
+db = s['bolohardwaremap']
+vr = db.view('map/bolometer', include_docs = True, reduce = False)
 
 width = 20
 
