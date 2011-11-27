@@ -26,7 +26,7 @@ def badExit(thekey):
   
 def main(*argv):
   '''
-    Use this script to get the value of a particular cyrogenic variable at a particular time.
+    Use this script to return the value of a particular cyrogenic variable at a particular time.
     
     usage: $> python getAutomateDataAtTime.py [variable name] [-pctime VAL optional]  [year] [month] [day] [hour] 
                                               [minute] [second] [microsecond (optional. = 0 by default)] [-method=name (optional, default is 'in')]
@@ -127,20 +127,20 @@ def main(*argv):
   if theMethod == 'en':  
     theVal, theTime = returnFirstVal(start_vr) 
     if theVal == -1: badExit(cryoKey)
-    else: print theVal
+    else: return theVal
       
   
   elif theMethod == 'ln':
     theVal, theTime = returnFirstVal(end_vr)  
     if theVal == -1: badExit(cryoKey)
-    else: print theVal    
+    else: return theVal    
   
   
   elif theMethod == 'bn':
     earlyVal, earlyTime =  returnFirstVal(start_vr)
     lateVal, lateTime =  returnFirstVal(end_vr)
     if earlyVal == -1 and lateVal == -1: badExit(cryoKey)
-    else: print earlyVal, lateVal
+    else: return earlyVal, lateVal
     
       
   elif theMethod == 'cn':
@@ -148,15 +148,15 @@ def main(*argv):
     lateVal, lateTime =  returnFirstVal(end_vr)
 
     if earlyVal == -1 and lateVal != -1:
-      print lateVal
+      return lateVal
     if lateVal == -1 and earlyVal != -1:
-      print earlyVal
+      return earlyVal
     if earlyVal == -1 and lateVal == -1: badExit(cryoKey)
       
     earlyDatTime = datetime.datetime(**earlyTime)
     lateDatTime = datetime.datetime(**lateTime)
-    if eventTime - earlyDatTime > lateDatTime - eventTime: print lateVal
-    else: print earlyVal
+    if eventTime - earlyDatTime > lateDatTime - eventTime: return lateVal
+    else: return earlyVal
   
     
   
@@ -165,9 +165,9 @@ def main(*argv):
     lateVal, lateTime =  returnFirstVal(end_vr)
 
     if earlyVal == -1 and lateVal != -1:
-      print lateVal
+      return lateVal
     if lateVal == -1 and earlyVal != -1:
-      print earlyVal
+      return earlyVal
     if earlyVal == -1 and lateVal == -1: badExit(cryoKey)
       
     earlyDatTime = datetime.datetime(**earlyTime)
@@ -181,9 +181,15 @@ def main(*argv):
     td = lateDatTime - earlyDatTime
     totalDiff = (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
     
-    print earlyVal + eventToEarly * (lateVal - earlyVal) / totalDiff
+    return earlyVal + eventToEarly * (lateVal - earlyVal) / totalDiff
     
     
     
 if __name__ == '__main__':
-  main(*sys.argv[1:])
+  theRet = main(*sys.argv[1:])
+  if theRet != None:
+    try:
+      for r in theRet:
+        print r
+    except:
+      print theRet
