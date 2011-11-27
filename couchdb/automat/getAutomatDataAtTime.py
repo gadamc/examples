@@ -32,7 +32,11 @@ def main(*argv):
                                               [minute] [second] [microsecond (optional. = 0 by default)] [-method=name (optional, default is 'in')]
                                               [-t=seconds (optional, default is 60 seconds)]
     
-           example: python getAutomatDataAtTime.py T_Speer 2011 10 27 0 10 10 0
+           examples: 
+                    python getAutomatDataAtTime.py T_Speer 2011 10 27 0 10 10 0
+                    python getAutomatDataAtTime.py T_Speer 2011 10 27 0 10 10 0 -method=bn
+                    python getAutomatDataAtTime.py T_Bolo -pctime 1321101265.017829
+                    python getAutomatDataAtTime.py T_Bolo -pctime 1321101265.017829 -t=1000 -method=cn
 
            $> python getAutomateDataAtTime.py list
                 This will return a list of all cryogenic variables that are available according to the latest documents written 
