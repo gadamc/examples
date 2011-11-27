@@ -29,7 +29,7 @@ def main(*argv):
     Use this script to get the value of a particular cyrogenic variable at a particular time.
     
     usage: $> python getAutomateDataAtTime.py [variable name] [-pctime VAL optional]  [year] [month] [day] [hour] 
-                                              [minute] [second] [microsecond (optional. = 0 by default)] [-method=name (optional, default is 'cn')]
+                                              [minute] [second] [microsecond (optional. = 0 by default)] [-method=name (optional, default is 'in')]
                                               [-t=seconds (optional, default is 60 seconds)]
     
            $> python getAutomateDataAtTime.py list
@@ -46,7 +46,8 @@ def main(*argv):
     -method=bn
           bn == "both neighbors". this will return the value of the cryogenic variable at both neighboring times
     -method=in
-          in == 'interpolation'
+          in == 'interpolation'. This computes the interpolated value between neighboring measurements. If this method fails because one of the nearby event times is outside of range (set by the
+          -t=seconds option), then the calculation is redone using the -method=cn switch. 
     -method=en
           en == "early neighbor". This returns the neighbor value measured prior to the time you provide     
     -method=ln
@@ -147,9 +148,9 @@ def main(*argv):
     lateVal, lateTime =  returnFirstVal(end_vr)
 
     if earlyVal == -1 and lateVal != -1:
-      print lateVal, lateTime
+      print lateVal
     if lateVal == -1 and earlyVal != -1:
-      print earlyVal, earlyTime
+      print earlyVal
     if earlyVal == -1 and lateVal == -1: badExit(cryoKey)
       
     earlyDatTime = datetime.datetime(**earlyTime)
@@ -172,7 +173,15 @@ def main(*argv):
     earlyDatTime = datetime.datetime(**earlyTime)
     lateDatTime = datetime.datetime(**lateTime)
     
-    print earlyVal + (eventTime - earlyDatTime) * (lateVal - earlyVal) / (lateDatTime - earlyDatTime)
+    #compute the time difference in seconds directly because the timedelta object method "totalseconds"
+    #was implemented in python 2.7. Mac OS 10.6 ships with python 2.6 and so this method doesn't exist on those
+    #running Snow Leopard or sooner. 
+    td = eventTime - earlyDatTime
+    eventToEarly = (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+    td = lateDatTime - earlyDatTime
+    totalDiff = (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+    
+    print earlyVal + eventToEarly * (lateVal - earlyVal) / totalDiff
     
     
     
