@@ -98,7 +98,7 @@ def main(*argv):
   
   #step back through the arguments to see if the user wants specific options
   global theMethod, timeThreshold, servName, dbName
-  theMethod = 'en'
+  theMethod = 'in'
   timeThreshold = 60
   servName = 'https://edwdbik.fzk.de:6984'
   dbName = 'automat'
