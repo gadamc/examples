@@ -75,7 +75,7 @@ def main(*argv):
   #build the eventTime from the arguments
   eventTime = 0
   if argv[1] == '-pctime':
-    eventTime = datetime.utcfromtimestamp(float(argv[2]))
+    eventTime = datetime.datetime.utcfromtimestamp(float(argv[2]))
   else:
     eventTime = datetime.datetime( int(argv[1]), int(argv[2]), int(argv[3]), int(argv[4]), int(argv[5]), int(argv[6]) )
     if len(argv) >= 8:
