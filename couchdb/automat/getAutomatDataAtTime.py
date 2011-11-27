@@ -32,6 +32,8 @@ def main(*argv):
                                               [minute] [second] [microsecond (optional. = 0 by default)] [-method=name (optional, default is 'in')]
                                               [-t=seconds (optional, default is 60 seconds)]
     
+           example: python getAutomatDataAtTime.py T_Speer 2011 10 27 0 10 10 0
+
            $> python getAutomateDataAtTime.py list
                 This will return a list of all cryogenic variables that are available according to the latest documents written 
                 to the database. This doesn't necessarily mean that these cryogenic variables are available in all past data, but 
@@ -105,10 +107,10 @@ def main(*argv):
   startTime = eventTime - datetime.timedelta(seconds=timeThreshold)
   endTime = eventTime + datetime.timedelta(seconds=timeThreshold)
     
+  #we break up the query of the database into two queries with the event time at the boundary
   skey = [startTime.year, startTime.month, startTime.day, startTime.hour, startTime.minute, startTime.second, startTime.microsecond]
   evkey  = [eventTime.year, eventTime.month, eventTime.day, eventTime.hour, eventTime.minute, eventTime.second, eventTime.microsecond]
   ekey = [endTime.year, endTime.month, endTime.day, endTime.hour, endTime.minute, endTime.second, endTime.microsecond]
-  
   
   #get the two view results from the database
   start_vr = db.view('data/bydate', endkey=skey, startkey=evkey, reduce=False, include_docs=True, descending=True)
