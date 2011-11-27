@@ -45,8 +45,8 @@ def main(*argv):
     methods:
     -method=bn
           bn == "both neighbors". this will return the value of the cryogenic variable at both neighboring times
-    -method=ex
-          ex == 'extrapolate'
+    -method=in
+          in == 'interpolation'
     -method=en
           en == "early neighbor". This returns the neighbor value measured prior to the time you provide     
     -method=ln
@@ -91,7 +91,7 @@ def main(*argv):
     elif lastArg.startswith('-method'):
       theMethod = lastArg.split('=')[1]
     else:
-      #there are no more args to look at
+      #there are no more recognized args to look at
       return
     
     newArgs = copy.deepcopy(argv[ : len(argv)-1])
@@ -109,10 +109,11 @@ def main(*argv):
   ekey = [endTime.year, endTime.month, endTime.day, endTime.hour, endTime.minute, endTime.second, endTime.microsecond]
   
   
+  #get the two view results from the database
   start_vr = db.view('data/bydate', endkey=skey, startkey=evkey, reduce=False, include_docs=True, descending=True)
   end_vr = db.view('data/bydate', startkey=evkey, endkey=ekey, reduce=False, include_docs=True, descending=False)
   
-  #define a helpful functions to return the first value it finds in a ViewReturn object
+  #define a helpful function to return the first value it finds in a ViewReturn object
   def returnFirstVal(vr):
     for row in vr:  
       doc = row['doc']
@@ -121,21 +122,17 @@ def main(*argv):
     return -1,-1
   
   
-  
+  #return the value appropriate for the chosen method
   if theMethod == 'en':  
-    theVal, theTime = returnFirstVal(start_vr) #since descending=True was passed into the view request, this loop 
-                                    #can quit as soon as the variable is found
+    theVal, theTime = returnFirstVal(start_vr) 
     if theVal == -1: badExit(cryoKey)
-    else: 
-      print theVal
+    else: print theVal
       
   
   elif theMethod == 'ln':
-    theVal, theTime = returnFirstVal(end_vr)  #since descending=False was passed into the view request, this loop 
-                          #can quit as soon as the variable is found
+    theVal, theTime = returnFirstVal(end_vr)  
     if theVal == -1: badExit(cryoKey)
-    else: 
-      print theVal    
+    else: print theVal    
   
   
   elif theMethod == 'bn':
@@ -157,13 +154,12 @@ def main(*argv):
       
     earlyDatTime = datetime.datetime(**earlyTime)
     lateDatTime = datetime.datetime(**lateTime)
-    if eventTime - earlyDatTime > lateDatTime - eventTime: 
-      print lateVal
+    if eventTime - earlyDatTime > lateDatTime - eventTime: print lateVal
     else: print earlyVal
   
     
   
-  elif theMethod == 'ex':  
+  elif theMethod == 'in':  
     earlyVal, earlyTime =  returnFirstVal(start_vr)
     lateVal, lateTime =  returnFirstVal(end_vr)
 
@@ -175,6 +171,9 @@ def main(*argv):
       
     earlyDatTime = datetime.datetime(**earlyTime)
     lateDatTime = datetime.datetime(**lateTime)
+    
+    print earlyVal + (eventTime - earlyDatTime) * (lateVal - earlyVal) / (lateDatTime - earlyDatTime)
+    
     
     
 if __name__ == '__main__':
