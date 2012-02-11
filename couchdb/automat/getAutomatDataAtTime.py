@@ -75,7 +75,8 @@ def main(*argv):
                 
     time threshold:
       -t=seconds.   Searches around your given event time by a range of +- seconds. If no data is found 
-                    in this range, nothing is printed to stdout and an error message is printed to stderr
+                    in this range, nothing is printed to stdout and an error message is printed to stderr.
+                    The default time threshold is 60 seconds.
         
     select database server
       -server=address   Default: address = https://edwdbik.fzk.de:6984. If you're using a local CouchDB,
